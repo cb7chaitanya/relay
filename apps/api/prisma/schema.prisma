@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Sender {
+  USER
+  ASSISTANT
+}
+
+model Conversation {
+  id        String    @id @default(uuid())
+  title     String?
+  createdAt DateTime  @default(now())
+  messages  Message[]
+
+  @@index([createdAt])
+}
+
+model Message {
+  id               String       @id @default(uuid())
+  conversationId   String
+  conversation     Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender           Sender
+  text             String
+  /// Tracks OpenAI prompt token usage per assistant response for cost monitoring and analytics.
+  promptTokens     Int?
+  /// Tracks OpenAI completion token usage per assistant response for cost monitoring and analytics.
+  completionTokens Int?
+  createdAt        DateTime     @default(now())
+
+  @@index([conversationId, createdAt])
+  @@index([sender])
+}
