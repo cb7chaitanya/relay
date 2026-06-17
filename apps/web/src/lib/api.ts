@@ -1,4 +1,4 @@
-import type { SessionResponse } from "@relay/shared";
+import type { SessionResponse, SessionSummary } from "@relay/shared";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
@@ -73,6 +73,14 @@ export async function streamChatMessage(
   } finally {
     reader.releaseLock();
   }
+}
+
+export async function fetchSessions(): Promise<SessionSummary[]> {
+  const response = await fetch(`${API_URL}/chat/sessions`);
+  if (!response.ok) {
+    throw new Error("Failed to load sessions");
+  }
+  return response.json();
 }
 
 export async function fetchSession(
