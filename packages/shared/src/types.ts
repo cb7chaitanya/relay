@@ -17,6 +17,13 @@ export interface ConversationDTO {
   createdAt: string;
 }
 
+export interface SessionSummary {
+  id: string;
+  title: string | null;
+  updatedAt: string;
+  messageCount: number;
+}
+
 export interface SessionResponse {
   sessionId: string;
   messages: MessageDTO[];

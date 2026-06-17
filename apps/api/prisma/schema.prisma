@@ -16,9 +16,10 @@ model Conversation {
   id        String    @id @default(uuid())
   title     String?
   createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   messages  Message[]
 
-  @@index([createdAt])
+  @@index([updatedAt])
 }
 
 model Message {

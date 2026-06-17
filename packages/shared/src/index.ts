@@ -2,6 +2,7 @@ export { Sender } from "./types";
 export type {
   MessageDTO,
   ConversationDTO,
+  SessionSummary,
   SessionResponse,
   ChatResponse,
   ApiErrorResponse,

@@ -1,8 +1,14 @@
 import { Sender } from "@prisma/client";
 import { prisma } from "../lib/prisma";
 
-export async function createConversation() {
-  return prisma.conversation.create({ data: {} });
+const TITLE_MAX_LENGTH = 40;
+
+export async function createConversation(title?: string) {
+  return prisma.conversation.create({
+    data: {
+      ...(title ? { title: title.slice(0, TITLE_MAX_LENGTH) } : {}),
+    },
+  });
 }
 
 export async function findConversationById(id: string) {
@@ -13,6 +19,25 @@ export async function deleteConversation(id: string) {
   return prisma.conversation.delete({ where: { id } });
 }
 
+export async function listConversations() {
+  return prisma.conversation.findMany({
+    orderBy: { updatedAt: "desc" },
+    select: {
+      id: true,
+      title: true,
+      updatedAt: true,
+      _count: { select: { messages: true } },
+    },
+  });
+}
+
+export async function updateConversationTitle(id: string, title: string) {
+  return prisma.conversation.update({
+    where: { id },
+    data: { title: title.slice(0, TITLE_MAX_LENGTH) },
+  });
+}
+
 export async function createMessage(data: {
   conversationId: string;
   sender: Sender;
@@ -20,7 +45,14 @@ export async function createMessage(data: {
   promptTokens?: number;
   completionTokens?: number;
 }) {
-  return prisma.message.create({ data });
+  const [message] = await prisma.$transaction([
+    prisma.message.create({ data }),
+    prisma.conversation.update({
+      where: { id: data.conversationId },
+      data: { updatedAt: new Date() },
+    }),
+  ]);
+  return message;
 }
 
 export async function findMessagesByConversationId(

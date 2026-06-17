@@ -6,6 +6,8 @@ import {
   findConversationById,
   findMessagesByConversationId,
   getRecentMessages,
+  listConversations,
+  updateConversationTitle,
 } from "../repositories/chat.repository";
 import { llmProvider } from "../providers/instance";
 import type { LLMMessage } from "../providers/types";
@@ -53,14 +55,19 @@ export async function* handleChatMessage(
   sessionId: string | undefined,
   requestId?: string,
 ): AsyncGenerator<ChatEvent> {
-  const conversation = sessionId
-    ? await resolveConversation(sessionId)
-    : await createConversation();
+  const isNew = !sessionId;
+  const conversation = isNew
+    ? await createConversation(message)
+    : await resolveConversation(sessionId);
+
+  if (!isNew && !conversation.title) {
+    await updateConversationTitle(conversation.id, message).catch(() => {});
+  }
 
   logger.info("Processing chat message", {
     requestId,
     sessionId: conversation.id,
-    isNew: !sessionId,
+    isNew,
   });
 
   yield { event: "session", data: { sessionId: conversation.id } };
@@ -125,6 +132,16 @@ export async function* handleChatMessage(
   });
 
   yield { event: "done", data: { promptTokens, completionTokens } };
+}
+
+export async function getSessions() {
+  const conversations = await listConversations();
+  return conversations.map((c) => ({
+    id: c.id,
+    title: c.title,
+    updatedAt: c.updatedAt.toISOString(),
+    messageCount: c._count.messages,
+  }));
 }
 
 export async function getSession(sessionId: string): Promise<{

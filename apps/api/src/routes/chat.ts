@@ -5,6 +5,7 @@ import { validateBody, validateParams } from "../middleware/validate";
 import { chatRateLimit } from "../middleware/rate-limit";
 import {
   handleChatMessage,
+  getSessions,
   getSession,
   deleteSession,
 } from "../services/chat.service";
@@ -72,6 +73,15 @@ router.post(
     }
   },
 );
+
+router.get("/chat/sessions", async (_req, res, next) => {
+  try {
+    const sessions = await getSessions();
+    res.json(sessions);
+  } catch (err) {
+    next(err);
+  }
+});
 
 router.get(
   "/chat/session/:sessionId",
