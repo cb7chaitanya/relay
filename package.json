@@ -1,14 +1,10 @@
 {
   "name": "relay",
   "private": true,
-  "workspaces": [
-    "packages/*",
-    "apps/*"
-  ],
   "scripts": {
-    "build:shared": "npm run build -w @relay/shared",
-    "dev:api": "npm run build:shared && npm run dev -w @relay/api",
-    "dev:web": "npm run build:shared && npm run dev -w @relay/web",
-    "build": "npm run build:shared && npm run build -w @relay/api && npm run build -w @relay/web"
+    "build:shared": "pnpm --filter @relay/shared build",
+    "dev:api": "pnpm build:shared && pnpm --filter @relay/api dev",
+    "dev:web": "pnpm build:shared && pnpm --filter @relay/web dev",
+    "build": "pnpm build:shared && pnpm --filter @relay/api build && pnpm --filter @relay/web build"
   }
 }
