@@ -22,12 +22,12 @@ export default function MessageList({
 
   return (
     <div
-      className="h-full overflow-y-auto bg-gray-50 px-4 py-6"
+      className="message-scroll h-full overflow-y-auto px-4 py-8 sm:px-6"
       role="log"
       aria-label="Conversation"
       aria-live="polite"
     >
-      <div className="mx-auto max-w-2xl space-y-4">
+      <div className="mx-auto max-w-[720px] space-y-5">
         {messages.map((msg) => (
           <MessageBubble key={msg.id} message={msg} />
         ))}

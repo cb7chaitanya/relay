@@ -46,36 +46,38 @@ export default function ChatInput({
     el.style.height = Math.min(el.scrollHeight, 120) + "px";
   }
 
+  const hasContent = value.trim().length > 0;
+
   return (
     <form
       onSubmit={handleSubmit}
-      className="border-t bg-white px-4 py-3 safe-bottom"
+      className="border-t border-gray-100 bg-white px-4 py-4 safe-bottom sm:px-6"
       aria-label="Message input"
     >
-      <div className="mx-auto flex max-w-2xl items-end gap-2">
+      <div className="mx-auto flex max-w-[720px] items-end gap-3">
         <div className="relative flex-1">
           <textarea
             ref={textareaRef}
             value={value}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
-            placeholder="Type a message..."
+            placeholder="Send a message..."
             disabled={disabled}
             maxLength={MAX_LENGTH}
             rows={1}
             aria-label="Message"
             aria-describedby={showCounter ? "char-counter" : undefined}
-            className={`w-full resize-none rounded-xl border px-4 py-2.5 text-sm leading-normal focus:outline-none focus:ring-1 disabled:opacity-50 ${
+            className={`w-full resize-none rounded-2xl border bg-gray-50/50 px-4 py-3 text-[14px] leading-normal shadow-sm transition-all duration-150 placeholder:text-gray-400 focus:bg-white focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:opacity-40 ${
               overLimit
-                ? "border-red-400 focus:border-red-500 focus:ring-red-500"
-                : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                ? "border-red-300 focus:border-red-400 focus:ring-red-100"
+                : "border-gray-200 focus:border-blue-300 focus:ring-blue-100"
             }`}
           />
           {showCounter && (
             <span
               id="char-counter"
               aria-live="polite"
-              className={`absolute bottom-1 right-2 text-xs ${
+              className={`absolute bottom-2 right-3 text-[11px] ${
                 overLimit ? "text-red-500" : "text-gray-400"
               }`}
             >
@@ -85,11 +87,29 @@ export default function ChatInput({
         </div>
         <button
           type="submit"
-          disabled={disabled || !value.trim() || overLimit}
+          disabled={disabled || !hasContent || overLimit}
           aria-label="Send message"
-          className="shrink-0 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50 disabled:hover:bg-blue-600"
+          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl transition-all duration-150 ${
+            hasContent && !disabled && !overLimit
+              ? "bg-blue-600 text-white shadow-sm hover:bg-blue-700 active:scale-95"
+              : "bg-gray-100 text-gray-300"
+          }`}
         >
-          Send
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 18 18"
+            fill="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M3.5 9h11M9.5 4l5 5-5 5"
+              stroke="currentColor"
+              strokeWidth="1.75"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
         </button>
       </div>
     </form>
